@@ -1,11 +1,15 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyparser = require('body-parser');
+const path = require('path');
 const port = 4000;
 const UserRoutes = require('./Routes/user')
 const server = express()
 
 server.use(bodyparser.json());
+
+//img
+server.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 server.get('/', (req, res)=>{
     res.send("Hello Farfour!");
@@ -14,7 +18,7 @@ server.get('/', (req, res)=>{
 server.use('/user', UserRoutes);
 
 
-mongoose.connect("")
+mongoose.connect("mongodb+srv://admin:admin@ventes.0mc9a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 .then(result => {
     server.listen(port, () => {
         console.log(`server is running on port ${port}`);
