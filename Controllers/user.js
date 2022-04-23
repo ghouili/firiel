@@ -21,11 +21,20 @@ const Ajouter = async (req, res) => {
 }
 
 const Register = async (req, res) => {
-    const { email, password } = req.body;
+    const { nom, tel, adress, email, password } = req.body;
     const hashedPass = await bcrypt.hash(password, 10);
+
+    let logo = 'logo.png';
+    if(req.file) {
+        logo = req.file.filename;
+    }
 
     const NewUser = new user({
         email,
+        tel,
+        adress,
+        nom,
+        logo,
         password: hashedPass
     });
 
@@ -46,20 +55,20 @@ const login = async (req, res) => {
     try {
         existinguser = await user.findOne({ email: email});
     } catch (error) {
-        return res.status(500).json({message: "something went wrong with DB", error: error})
+        return res.status(500).json({success: false, message: "something went wrong with DB", error: error})
     }
     
     if (!existinguser) {
-        return res.status(405).json({message: "User Doesn't Exist!!"})
+        return res.status(405).json({success: false, message: "User Doesn't Exist!!"})
     }
 
     let check = await bcrypt.compare( password, existinguser.password);
 
     if (!check) {
-        return res.status(405).json({message: "check your Password!!"})
+        return res.status(405).json({success: false, message: "check your Password!!"})
     }
 
-    return res.status(200).json({message: "Welcome", data: existinguser});
+    return res.status(200).json({message: `Welcome ${existinguser.nom}`, success: true, data: existinguser});
 
 }
 
